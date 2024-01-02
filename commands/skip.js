@@ -1,10 +1,9 @@
-// queue.js
 const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('queue')
-        .setDescription('List all songs in the queue'),
+        .setName('skip')
+        .setDescription('Skip the currently playing song and move to the next one'),
     async execute(interaction) {
         await interaction.deferReply();
 
@@ -18,12 +17,11 @@ module.exports = {
 
         const queue = DisTube.getQueue(interaction.guildId);
 
-        if (!queue || !queue.songs || queue.songs.length === 0) {
-            return interaction.followUp('The queue is empty.');
+        if (!queue || !queue.playing) {
+            return interaction.followUp('There is nothing playing to skip.');
         }
 
-        const songList = queue.songs.map((song, index) => `${index + 1}. ${song.name}`).join('\n');
-
-        interaction.followUp(`**Queue:**\n${songList}`);
+        DisTube.skip(interaction.guildId);
+        interaction.followUp('Skipped the currently playing song and moved to the next one!');
     },
 };
