@@ -2,8 +2,8 @@ const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('pause')
-        .setDescription('Pause the currently playing audio'),
+        .setName('resume')
+        .setDescription('Resume the currently paused audio'),
     async execute(interaction) {
         await interaction.deferReply();
 
@@ -17,11 +17,11 @@ module.exports = {
 
         const queue = DisTube.getQueue(interaction.guildId);
 
-        if (!queue || !queue.playing) {
-            return interaction.followUp('There is nothing playing to pause.');
+        if (!queue || !queue.paused) {
+            return interaction.followUp('There is nothing paused to resume.');
         }
 
-        DisTube.pause(interaction.guildId);
-        interaction.followUp('Paused the music!');
+        DisTube.resume(interaction.guildId);
+        interaction.followUp('Resumed the music!');
     },
 };

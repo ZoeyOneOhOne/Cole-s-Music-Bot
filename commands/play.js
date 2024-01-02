@@ -18,11 +18,8 @@ module.exports = {
         const voiceChannel = interaction.member.voice.channel;
 
         if (!voiceChannel || voiceChannel.type !== 2) {
-            console.log('Member is not in a voice channel or voice channel type is incorrect.');
             return interaction.followUp('You must be in a voice channel to use this command.');
         }
-
-        console.log('Attempting to play:', audioTrack);
         
         DisTube.play(voiceChannel, audioTrack, {
             member: interaction.member,
@@ -32,7 +29,6 @@ module.exports = {
         // Event listener for successful playback
         DisTube.on('playSong', (queue, song) => {
             interaction.followUp(`Now playing: ${song.name}`);
-            console.log(DisTube.getQueue(interaction.guildId));
         });
 
         // Event listener for playback errors
