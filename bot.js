@@ -108,12 +108,15 @@ setInterval(() => {
 
     const botVoiceChannel = me.voice.channel;
 
-    console.log(botVoiceChannel);
-
     if (idleDuration >= 5 * 60 * 1000) { // 5 minutes (in milliseconds)
         if (botVoiceChannel) {
-            client.DisTube.voices.leave(guildId);
-            console.log(`Bot left voice channel ${botVoiceChannel.name} due to inactivity.`);
+            const isPlaying = client.DisTube.isPlaying(guildId);
+            const isQueueEmpty = client.DisTube.getQueue(guildId)?.songs.length === 0;
+            
+            if (!isPlaying && isQueueEmpty) {
+                client.DisTube.voices.leave(guildId);
+                console.log(`Bot left voice channel ${botVoiceChannel.name} due to inactivity.`);
+            }
         }
     }
 }, 5 * 60 * 1000); // Check every 5 minutes (in milliseconds)
