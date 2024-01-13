@@ -110,10 +110,9 @@ setInterval(() => {
 
     if (idleDuration >= 5 * 60 * 1000) { // 5 minutes (in milliseconds)
         if (botVoiceChannel) {
-            const isPlaying = client.DisTube.isPlaying(guildId);
-            const isQueueEmpty = client.DisTube.getQueue(guildId)?.songs.length === 0;
+            const isQueueEmpty = client.DisTube.getQueue(guildId)?.songs.length > 0;
             
-            if (!isPlaying && isQueueEmpty) {
+            if (!isQueueEmpty) {
                 client.DisTube.voices.leave(guildId);
                 console.log(`Bot left voice channel ${botVoiceChannel.name} due to inactivity.`);
             }
