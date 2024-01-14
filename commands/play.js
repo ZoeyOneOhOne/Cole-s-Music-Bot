@@ -28,7 +28,7 @@ module.exports = {
 
         // Event listener for successful playback
         DisTube.on('playSong', (queue, song) => {
-            interaction.followUp(`Now playing: ${song.name}`);
+            interaction.followUp(`Now playing: ${song.name} : ${song.url}`);
         });
 
         // Event listener for playback errors

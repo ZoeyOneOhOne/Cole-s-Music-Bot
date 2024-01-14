@@ -29,7 +29,7 @@ module.exports = {
 
         // Event listener for successful playback
         DisTube.on('addSong', (queue, song) => {
-            interaction.followUp(`Added to the queue: ${song.name}`);
+            interaction.followUp(`Added to the queue: ${song.name} : ${song.url}`);
         });
 
           // Event listener for successful playback
