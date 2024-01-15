@@ -1,5 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 
+let lastPlayedSong = null;
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('play')
@@ -28,7 +30,10 @@ module.exports = {
 
         // Event listener for successful playback
         DisTube.on('playSong', (queue, song) => {
-            interaction.followUp(`Now playing: ${song.name} : ${song.url}`);
+            if (song.name !== lastPlayedSong) {
+                interaction.followUp(`Now playing: ${song.name} : ${song.url}`);
+                lastPlayedSong = song.name; // Update the last played song
+            }
         });
 
         // Event listener for playback errors
