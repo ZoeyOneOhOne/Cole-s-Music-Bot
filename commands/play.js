@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 
 let lastPlayedSong = null;
+let isPlaying = null;
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -22,19 +23,32 @@ module.exports = {
         if (!voiceChannel || voiceChannel.type !== 2) {
             return interaction.followUp('You must be in a voice channel to use this command.');
         }
+
+         // Check if there is a song currently playing
+         const queue = DisTube.getQueue(interaction.guildId);
+         isPlaying = queue && queue.songs.length > 0;
+
+         console.log(isPlaying);
         
         DisTube.play(voiceChannel, audioTrack, {
             member: interaction.member,
             textChannel: interaction.channel,
         });
 
-        // Event listener for successful playback
-        DisTube.on('playSong', (queue, song) => {
-            if (song.name !== lastPlayedSong) {
-                interaction.followUp(`Now playing: ${song.name} : ${song.url}`);
-                lastPlayedSong = song.name; // Update the last played song
-            }
-        });
+        if (isPlaying) {
+            DisTube.on('addSong', (queue, song) => {
+                if (song.name != lastPlayedSong) {
+                    interaction.followUp(`Added to the queue: ${song.name}`);
+                }
+            });
+        } else {
+            DisTube.on('playSong', (queue, song) => {
+                if (song.name != lastPlayedSong) {
+                    interaction.followUp(`Now playing: ${song.name} : ${song.url}`);
+                    lastPlayedSong = song.name; // Update the last played song
+                }
+            });
+        }
 
         // Event listener for playback errors
         DisTube.on('error', (channel, error) => {
