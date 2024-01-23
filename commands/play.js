@@ -27,8 +27,7 @@ module.exports = {
          // Check if there is a song currently playing
          const queue = DisTube.getQueue(interaction.guildId);
          isPlaying = queue && queue.songs.length > 0;
-
-         console.log(isPlaying);
+        
         
         DisTube.play(voiceChannel, audioTrack, {
             member: interaction.member,
