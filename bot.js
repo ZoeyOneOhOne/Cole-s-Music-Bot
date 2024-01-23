@@ -1,8 +1,10 @@
 const { Client, GatewayIntentBits, Collection, Events } = require('discord.js');
 const fs = require('node:fs');
 const path = require('node:path');
-const { token, clientId, guildId } = require('./config.json');
+const { token, clientId } = require('./config.json');
 const { DisTube } = require("distube");
+
+const guildId = null;
 
 const client = new Client({
     intents: [
@@ -54,7 +56,7 @@ let lastActivityTimestamp = Date.now();
         const rest = new REST({ version: '10' }).setToken(token);
 
         const data = await rest.put(
-            Routes.applicationGuildCommands(clientId, guildId),
+            Routes.applicationCommands(clientId),
             { body: commands },
         );
 
