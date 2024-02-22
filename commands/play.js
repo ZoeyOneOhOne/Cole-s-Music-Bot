@@ -1,4 +1,5 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
+const { logErrorToFile } = require('../log-error');
 
 let lastPlayedSong = null;
 let isPlaying = null;
@@ -14,6 +15,30 @@ module.exports = {
         ),
     async execute(interaction) {
         await interaction.deferReply();
+        
+        // Build buttons
+        const pauseButton = new ButtonBuilder()
+        .setCustomId('pause')
+        .setStyle(ButtonStyle.Secondary)
+        .setEmoji('⏸');
+
+        const playButton = new ButtonBuilder()
+        .setCustomId('play')
+        .setStyle(ButtonStyle.Secondary)
+        .setEmoji('▶️');
+
+        const stopButton = new ButtonBuilder()
+        .setCustomId('stop')
+        .setStyle(ButtonStyle.Secondary)
+        .setEmoji('⏹️');
+
+        const skipButton = new ButtonBuilder()
+        .setCustomId('skip')
+        .setStyle(ButtonStyle.Secondary)
+        .setEmoji('⏭️');
+
+        const row = new ActionRowBuilder()
+        .addComponents(pauseButton, playButton, stopButton, skipButton);
 
         const DisTube = interaction.client.DisTube;
 
@@ -43,7 +68,7 @@ module.exports = {
         } else {
             DisTube.on('playSong', (queue, song) => {
                 if (song.name != lastPlayedSong) {
-                    interaction.followUp(`Now playing: ${song.name} : ${song.url}`);
+               interaction.followUp({ content: `Now playing: ${song.name} : ${song.url}`, components: [row] });
                     lastPlayedSong = song.name; // Update the last played song
                 }
             });
@@ -52,8 +77,44 @@ module.exports = {
         // Event listener for playback errors
         DisTube.on('error', (channel, error) => {
             console.error(`Error in voice channel ${channel.id}:`, error);
+            logErrorToFile(error, channel)
             interaction.followUp('There was an issue, please try again.');
         });
+
+
+        // Directly handle interactions without using a collector
+        interaction.client.on("interactionCreate", async (i) => {
+            if (!i.isButton()) return;
+            try {
+                switch (i.customId) {
+                    case 'pause':
+                        DisTube.pause(interaction.guildId);
+                        interaction.followUp('Paused the music!');
+                        break;
+
+                    case 'play':
+                        DisTube.resume(interaction.guildId);
+                        interaction.followUp('Resumed the music!');
+                        break;
+
+                    case 'stop':
+                        DisTube.stop(interaction.guildId);
+                        interaction.followUp('Stopped the music and cleared the queue!');
+                        break;
+
+                    case 'skip':
+                        DisTube.skip(interaction.guildId);
+                        interaction.followUp('Skipped the currently playing song and moved to the next one!');
+                        break;
+
+                }
+            } catch (error) {
+                console.error("Interaction handling error:", error);
+                logErrorToFile(error, i)
+            }
+        });
+
+
     },
 };
 

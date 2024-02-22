@@ -3,6 +3,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { token, clientId } = require('./config.json');
 const { DisTube } = require("distube");
+const { logErrorToFile } = require('./log-error');
+const { log } = require('node:console');
 
 const guildId = null;
 
@@ -87,6 +89,7 @@ client.on(Events.InteractionCreate, async interaction => {
         lastActivityTimestamp = Date.now(); // Update last activity timestamp when a command is executed
     } catch (error) {
         console.error(error);
+        logErrorToFile(error, 'Error executing slash command');
         await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
     }
 });
