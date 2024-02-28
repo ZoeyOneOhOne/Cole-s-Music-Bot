@@ -77,7 +77,7 @@ module.exports = {
         // Event listener for playback errors
         DisTube.on('error', (channel, error) => {
             console.error(`Error in voice channel ${channel.id}:`, error);
-            logErrorToFile(error, channel)
+            logErrorToFile(error, channel);
             interaction.followUp('There was an issue, please try again.');
         });
 
